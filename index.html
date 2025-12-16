@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>MPGS Payment</title>
+
+    <script
+      src="https://test-gateway.mastercard.com/static/checkout/checkout.min.js"
+      data-error="errorCallback"
+      data-cancel="cancelCallback"
+      data-complete="completeCallback"
+    ></script>
+
+    <script>
+      function getParam(name) {
+        return new URLSearchParams(window.location.search).get(name);
+      }
+
+      window.onload = function () {
+        const sessionId = getParam("sessionId");
+        console.log("Session ID:", sessionId);
+
+        if (!sessionId) {
+          alert("Missing sessionId");
+          return;
+        }
+
+        Checkout.configure({
+          session: { id: sessionId },
+          interaction: {
+            merchant: {
+              name: "Test Merchant",
+            },
+          },
+        });
+
+        Checkout.showPaymentPage();
+      };
+
+      function errorCallback(error) {
+        console.error("MPGS ERROR:", error);
+        alert(JSON.stringify(error, null, 2));
+      }
+
+      function cancelCallback() {
+        console.log("Payment cancelled");
+      }
+
+      function completeCallback(result) {
+        console.log("Payment complete:", result);
+        alert("Payment completed");
+      }
+    </script>
+  </head>
+
+  <body>
+    <h3 style="text-align: center; margin-top: 40px">
+      Redirecting to payment...
+    </h3>
+  </body>
+</html>
+

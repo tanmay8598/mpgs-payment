@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <title>MPGS Payment</title>
 
+    <!-- Mastercard Hosted Checkout -->
     <script
       src="https://test-gateway.mastercard.com/static/checkout/checkout.min.js"
       data-error="errorCallback"
@@ -26,8 +27,9 @@
         }
 
         Checkout.configure({
-          session: { id: sessionId },
-          
+          session: {
+            id: sessionId,
+          },
         });
 
         Checkout.showPaymentPage();
@@ -35,16 +37,41 @@
 
       function errorCallback(error) {
         console.error("MPGS ERROR:", error);
-        alert(JSON.stringify(error, null, 2));
+
+        // Send to React Native
+        if (window.ReactNativeWebView) {
+          window.ReactNativeWebView.postMessage(
+            JSON.stringify({
+              type: "ERROR",
+              payload: error,
+            })
+          );
+        }
       }
 
       function cancelCallback() {
         console.log("Payment cancelled");
+
+        if (window.ReactNativeWebView) {
+          window.ReactNativeWebView.postMessage(
+            JSON.stringify({
+              type: "CANCEL",
+            })
+          );
+        }
       }
 
       function completeCallback(result) {
         console.log("Payment complete:", result);
-        alert("Payment completed");
+
+        if (window.ReactNativeWebView) {
+          window.ReactNativeWebView.postMessage(
+            JSON.stringify({
+              type: "COMPLETE",
+              payload: result,
+            })
+          );
+        }
       }
     </script>
   </head>
@@ -55,4 +82,3 @@
     </h3>
   </body>
 </html>
-
